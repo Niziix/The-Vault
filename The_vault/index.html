@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vault - Crypto Security</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: black;
+            overflow: hidden;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        #background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .navbar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border: 1px solid white;
+            border-radius: 8px;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, #6a0dad, #8a2be2);
+            transform: scale(1.1);
+        }
+
+        .logo {
+            width: 150px;
+            height: 150px;
+            background: url('https://cdn-icons-png.flaticon.com/512/2933/2933116.png') no-repeat center center;
+            background-size: contain;
+            margin: 20px auto;
+        }
+
+        h1 {
+            font-size: 3em;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        p {
+            margin: 10px 0 20px;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        input, select {
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            width: 200px;
+        }
+
+        input {
+            color: white;
+        }
+
+        select {
+            background: white;
+            color: black;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6a0dad, #8a2be2);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #8a2be2, #6a0dad);
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
+        }
+
+        #confirmation {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #00ffcc;
+            animation: fadeIn 1s ease;
+        }
+
+        .scoreboard {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid white;
+            color: white;
+            text-align: left;
+            max-width: 250px;
+            overflow-y: auto;
+        }
+
+        .scoreboard h2 {
+            font-size: 1.5em;
+            margin: 0 0 10px 0;
+            color: #ff8a00;
+        }
+
+        .scoreboard ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .scoreboard li {
+            margin-bottom: 15px;
+        }
+
+        #wallet-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid white;
+            z-index: 10;
+            text-align: center;
+        }
+
+        #wallet-modal input {
+            width: 90%;
+            margin: 10px 0;
+            background: white;
+            color: black;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="background"></canvas>
+
+    <div class="navbar">
+        <a href="#" onclick="openWalletModal()">Connect Wallet</a>
+    </div>
+
+    <div class="logo"></div>
+    <h1>The Vault</h1>
+    <p>Secure your cryptocurrency by selecting a lock period.</p>
+
+    <div class="input-group">
+        <input type="number" id="crypto-amount" placeholder="Enter amount" min="0">
+    </div>
+
+    <div class="input-group">
+        <select id="crypto-select">
+            <option value="AVAX">AVAX</option>
+            <option value="RLUSD">RLUSD</option>
+            <option value="ETH">ETH</option>
+            <option value="BTC">BTC</option>
+            <option value="BNB">BNB</option>
+            <option value="SOL">SOL</option>
+            <option value="ADA">ADA</option>
+            <option value="DOT">DOT</option>
+            <option value="MATIC">MATIC</option>
+            <option value="XRP">XRP</option>
+            <option value="DOGE">DOGE</option>
+            <option value="LTC">LTC</option>
+        </select>
+    </div>
+
+    <div class="buttons">
+        <button onclick="setLockTime('1 day')">1 Day</button>
+        <button onclick="setLockTime('1 week')">1 Week</button>
+        <button onclick="setLockTime('1 month')">1 Month</button>
+        <button onclick="setLockTime('1 year')">1 Year</button>
+    </div>
+
+    <p id="confirmation"></p>
+
+    <div class="scoreboard">
+        <h2>Vault Status</h2>
+        <ul id="scoreboard-list"></ul>
+    </div>
+
+    <div id="wallet-modal">
+        <h2>Connect Wallet</h2>
+        <input type="text" id="wallet-address" placeholder="Wallet Address">
+        <input type="password" id="wallet-password" placeholder="Password">
+        <button onclick="connectWallet()">Connect</button>
+        <button onclick="closeWalletModal()">Close</button>
+    </div>
+
+    <script>
+        function openWalletModal() {
+            document.getElementById('wallet-modal').style.display = 'block';
+        }
+
+        function closeWalletModal() {
+            document.getElementById('wallet-modal').style.display = 'none';
+        }
+
+        function connectWallet() {
+            const address = document.getElementById('wallet-address').value;
+            const password = document.getElementById('wallet-password').value;
+
+            if (address && password) {
+                alert(`Wallet connected: ${address}`);
+                closeWalletModal();
+            } else {
+                alert('Please enter both address and password.');
+            }
+        }
+
+        function setLockTime(duration) {
+            const amount = document.getElementById("crypto-amount").value;
+            const crypto = document.getElementById("crypto-select").value;
+
+            if (amount && amount > 0) {
+                const unlockTime = Date.now() + getTimeInMillis(duration);
+                const listItem = document.createElement("li");
+                const timerElement = document.createElement("span");
+
+                timerElement.classList.add("timer");
+                timerElement.dataset.unlock = unlockTime;
+
+                listItem.innerHTML = `${amount} ${crypto} - `;
+                listItem.appendChild(timerElement);
+
+                document.getElementById("scoreboard-list").appendChild(listItem);
+
+                updateTimers();
+            } else {
+                alert("Please enter a valid amount.");
+            }
+        }
+
+        function getTimeInMillis(duration) {
+            switch (duration) {
+                case '1 day': return 24 * 60 * 60 * 1000;
+                case '1 week': return 7 * 24 * 60 * 60 * 1000;
+                case '1 month': return 30 * 24 * 60 * 60 * 1000;
+                case '1 year': return 365 * 24 * 60 * 60 * 1000;
+                default: return 0;
+            }
+        }
+
+        function updateTimers() {
+            setInterval(() => {
+                const timers = document.querySelectorAll(".timer");
+                timers.forEach(timer => {
+                    const unlockTime = parseInt(timer.dataset.unlock);
+                    const remaining = unlockTime - Date.now();
+
+                    if (remaining > 0) {
+                        const hours = Math.floor(remaining / (1000 * 60 * 60));
+                        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                        timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                    } else {
+                        timer.textContent = "Unlocked!";
+                    }
+                });
+            }, 1000);
+        }
+
+        const canvas = document.getElementById('background');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+
+        const stars = [];
+
+        for (let i = 0; i < 150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2,
+                dx: (Math.random() - 0.5) * 0.5,
+                dy: (Math.random() - 0.5) * 0.5
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+
+                star.x += star.dx;
+                star.y += star.dy;
+
+                if (star.x < 0 || star.x > canvas.width) star.dx *= -1;
+                if (star.y < 0 || star.y > canvas.height) star.dy *= -1;
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+</html>
